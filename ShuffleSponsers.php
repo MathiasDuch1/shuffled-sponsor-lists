@@ -2,7 +2,7 @@
 /**
  * Plugin Name: Vores egen plugin - tagged som guiderotation"
  * Description: Adds unlimited ACF-driven sponsor lists to posts and displays them with shortcodes [list id="1"], [list id="2"], etc.; deterministic server-side shuffle (keep_first only).
- * Version: 2.0.0
+ * Version: 2.1.0
  * Author: Mathias Duch
  */
 
@@ -89,10 +89,24 @@ add_action('acf/init', function () {
                             ],
                             [
                                 'key' => 'field_item_name',
-                                'label' => 'Overskrift (H3)',
+                                'label' => 'Overskrift',
                                 'name' => 'name',
                                 'type' => 'text',
                                 'required' => 1,
+                            ],
+                            [
+                                'key' => 'field_item_heading_level',
+                                'label' => 'Overskrift niveau',
+                                'name' => 'heading_level',
+                                'type' => 'select',
+                                'choices' => [
+                                    'h2' => 'H2',
+                                    'h3' => 'H3',
+                                    'h4' => 'H4',
+                                ],
+                                'default_value' => 'h3',
+                                'ui' => 1,
+                                'return_format' => 'value',
                             ],
                             [
                                 'key' => 'field_item_img',
@@ -197,10 +211,11 @@ function smag2_render_list_html($list, $post_id) {
 
     $items = array_map(function ($r) {
         return [
-            'name'        => trim((string)($r['name'] ?? '')),
-            'image_id'    => (int)($r['image'] ?? 0),
-            'caption'     => trim((string)($r['caption'] ?? '')),
-            'description' => (string)($r['description'] ?? ''),
+            'name'          => trim((string)($r['name'] ?? '')),
+            'heading_level' => $r['heading_level'] ?? 'h3',
+            'image_id'      => (int)($r['image'] ?? 0),
+            'caption'       => trim((string)($r['caption'] ?? '')),
+            'description'   => (string)($r['description'] ?? ''),
         ];
     }, $list['items']);
 
@@ -219,7 +234,9 @@ function smag2_render_list_html($list, $post_id) {
     echo '<div class="smag-sponsors">';
 
     foreach ($ordered as $it) {
-        echo '<h3>'.esc_html($it['name']).'</h3>';
+        $level = in_array($it['heading_level'], ['h2','h3','h4']) ? $it['heading_level'] : 'h3';
+        echo '<' . $level . '>' . esc_html($it['name']) . '</' . $level . '>';
+
         if ($it['image_id']) {
             $img = wp_get_attachment_image($it['image_id'], 'large', false, [
                 'loading' => 'lazy',
