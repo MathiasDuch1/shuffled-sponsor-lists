@@ -1,6 +1,6 @@
 <?php
 /**
- * Plugin Name: Vores egen plugin - tagged som guiderotation"
+ * Plugin Name: Vores egen plugin - "tagged som guiderotation"
  * Description: Adds unlimited ACF-driven sponsor lists to posts and displays them with shortcodes [list id="1"], [list id="2"], etc.; deterministic server-side shuffle (keep_first only).
  * Version: 2.1.0
  * Author: Mathias Duch
